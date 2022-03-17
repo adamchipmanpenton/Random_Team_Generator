@@ -1,0 +1,21 @@
+[
+    {
+        "teamName" : "Team1",
+        "players" : ["Lisa Courtney", "JIll Sutton", "Hurley"],
+        "wins" : 2,
+        "losses" : 1,
+        "ties" : 0
+    },{
+        "teamName" : "Team2",
+        "players" : ["Adam Chipman", "Dan Sutton", "Jamie"],
+        "wins" : 1,
+        "losses" : 2,
+        "ties" : 0
+    },{
+        "teamName" : "Team3",
+        "players" : ["Adam Lichter", "Josh Mac", "Jamie Sellens"],
+        "wins" : 0,
+        "losses" : 2,
+        "ties" : 0
+    }  
+]
