@@ -20,7 +20,7 @@ import FormControl from "react-bootstrap/FormControl"
 import FormGroup from "react-bootstrap/esm/FormGroup";
 
 let listOfPlayers = []
-    let team1 = []
+let team1 = []
 
 export function Home({movies, setMovies}) {
     return (
@@ -44,12 +44,12 @@ export function Home({movies, setMovies}) {
 export function ViewTeams({teams, setTeams}) {
     console.log(teams)
 
-    function handleRemove(name, event) {
-        console.log(name)
+    function handleRemove(id, event) {
+        console.log(id)
         const remove = async () => {
-            const result = await  fetch("/api/removeMovie",{
+            const result = await  fetch("/api/removeTeam",{
                 method: "POST",
-                body: JSON.stringify({name: name}),
+                body: JSON.stringify({_id: id}),
                 headers:{"Content-Type": "application/json",}
             });
             const body = await result.json();
@@ -57,7 +57,7 @@ export function ViewTeams({teams, setTeams}) {
             setTeams(body.teams)
         }
         remove();
-        window.location.reload(false);
+        //window.location.reload(false);
       }
 
     return (
@@ -76,6 +76,7 @@ export function ViewTeams({teams, setTeams}) {
                         <Card.Body>
                         <Card.Title>{team.teamName}</Card.Title>
                         <Card.Text>
+                            <p>Id: {team._id}</p>
                             <p>Players: {team.players}</p>
                             <p>Wins: {team.wins}</p>
                             <p>Losses: {team.losses}</p>
@@ -83,7 +84,7 @@ export function ViewTeams({teams, setTeams}) {
                         </Card.Text>
                         </Card.Body>
                         <Card.Footer>
-                            <Button variant="danger" className="delete" onClick={() => handleRemove(team.name)}>Delete</Button>
+                            <Button variant="danger" className="delete" onClick={() => handleRemove(team._id)}>Delete</Button>
                         </Card.Footer>                
                     </Card>
                 </CardGroup>
@@ -93,16 +94,14 @@ export function ViewTeams({teams, setTeams}) {
     );
 }
 
-export function AddTeam({teams, setTeams}) {
-    
+export function AddTeam({teams, setTeams, playersAdded, setPlayersAdded}) {
+    console.log(playersAdded)
     let team2 = []
     let team3 = []
     console.log(listOfPlayers)
 
     const handleSubmit = (player) => {
-     
-        
-       
+
         {/*event.preventDefault();*/}
 
         const add = async () => {
@@ -117,19 +116,24 @@ export function AddTeam({teams, setTeams}) {
             setTeams(body.movies)
         }
         add();
+        const clear = async () => {
+
+            const result = await  fetch('/api/clearAddPlayer',{
+                method: "POST",
+               
+                headers:{"Content-Type": "application/json",}
+            });
+            const body = await result.json();
+            console.log(body);
+           
+        }
+        clear();
+
+
+
         console.log(`Players ${player}`)  
       }
 
-
-    const addName = (event) =>{
-
-        const player = document.getElementById("player").value
-        console.log(player)
-        listOfPlayers.push(player)
-        console.log(listOfPlayers)
-    
-        event.preventDefault()
-    }
 
 
     const numberOfTeams = (event) => {
@@ -155,8 +159,6 @@ export function AddTeam({teams, setTeams}) {
         event.preventDefault()
     }
 
-
-
     const place = (player, playersOnTeam, teamAmount) => {
         let number = Math.floor(Math.random() * teamAmount)
         let p = team1[number]
@@ -166,7 +168,6 @@ export function AddTeam({teams, setTeams}) {
         }else{
             place(player, playersOnTeam, teamAmount)
         }
-        
     }
     return (
         <div className="App">
@@ -178,6 +179,12 @@ export function AddTeam({teams, setTeams}) {
             <p>Add player.</p>
             </Container>
             <Container >
+
+            <Row xs={1} md={3} className="g-4">
+            { playersAdded.map( (player) => (           
+                <p>Players: {player.playerName}</p>
+            ))}   
+            </Row>    
                 <Form onSubmit={addName} >
                     <Row className="mb-3">
                         <FormGroup as={Col}>
@@ -222,7 +229,6 @@ export function AddTeam({teams, setTeams}) {
             </Container>
 
 
-
         </div>
     );
 };
@@ -260,5 +266,26 @@ export function Navigation(){
             </Navbar>
     )
 }
+
+export function addName(event){
+    const player = document.getElementById("player").value
+    console.log(player)
+    listOfPlayers.push(player)
+    console.log(listOfPlayers)
+    const add = async () => {
+
+        const result = await  fetch('/api/addPlayer',{
+            method: "POST",
+            body: JSON.stringify({playerName: player}),
+            headers:{"Content-Type": "application/json",}
+        });
+        const body = await result.json();
+        console.log(body);
+    }
+    add();
+    event.preventDefault()
+}
+
+
 
 

@@ -11,12 +11,24 @@ function App() {
       .then((response) => response.json())
       .then(setTeams)
   }, []);
+
+  const [playersAdded, setPlayersAdded] = useState([]);
+  useEffect(() => {
+    fetch('/api/playersAdded')
+      .then((response) => response.json())
+      .then(setPlayersAdded)
+  }, []);
+
+
+  
+
   return(
     <div>
       <Routes>
         <Route path="/" element={<Home teams={teams} setTeams={setTeams} />}/>
         <Route path="/viewTeams" element={<ViewTeams teams={teams} setTeams={setTeams} />}/>
-        <Route path="/addTeam" element={<AddTeam teams={teams} setTeams={setTeams}/>}/>
+        <Route path="/addTeam" element={<AddTeam teams={teams} setTeams={setTeams}
+        playersAdded={playersAdded} setPlayersAdded={setPlayersAdded}/>}/>
         <Route path="*" element={<PageNotFound />}/>
       </Routes>
     </div>

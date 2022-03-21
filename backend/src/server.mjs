@@ -13,14 +13,14 @@ app.use(express.static(path.join(__dirname, 'build')));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }))
 
-app.post('/api/removeMovie', async (req, res) => {
+app.post('/api/removeTeam', async (req, res) => {
     try {
         const client = await MongoClient.connect('mongodb://localhost:27017', {useNewUrlParser: true});
-        const db = client.db('my-movies');
-        let returnVal = await db.collection('movies').deleteOne( {name:req.body.name})
+        const db = client.db('TeamMaker');
+        let returnVal = await db.collection('teams').deleteOne( {_id:req.body._id})
         console.log(returnVal);
         if( returnVal.deletedCount == 1) {
-            res.status(200).json({message: `Movie ${req.body.name} deleted`});
+            res.status(200).json({message: `Movie ${req.body._id} deleted`});
         }
         else {
             res.status(200).json({message: "Unable to delete movie"});
@@ -45,9 +45,48 @@ app.post('/api/addTeam', async (req, res) => {
     }
 })
 
-app.post('/api/addPoster', async (req, res) => {
-    console.log("Testadd" + req)
+app.post('/api/addPlayer', async (req, res) => {
+    try {
+        console.log("Test", req)
+        const client = await MongoClient.connect('mongodb://localhost:27017', {useNewUrlParser: true});
+        const db = client.db('TeamMaker');
+        await db.collection('ListOfPlayers').insertOne( {playerName : req.body.playerName})       
+        res.status(200).json({message: "Success"});
+        
+        client.close();
+    }
+    catch( error) {
+        res.status(500).json( { message: "Error connecting to db", error});
+    }
 })
+
+app.post('/api/clearAddPlayer', async (req, res) => {
+    try {
+        const client = await MongoClient.connect('mongodb://localhost:27017', {useNewUrlParser: true});
+        const db = client.db('TeamMaker');
+        await db.collection('ListOfPlayers').forEach(c=>db[c].drop())  
+        res.status(200).json({message: "Success"});
+        client.close();
+    }
+    catch( error) {
+        res.status(500).json( { message: "Error connecting to db", error});
+    }
+})
+
+app.get('/api/playersAdded', async (req, res) => {
+    try {
+        const client = await MongoClient.connect('mongodb://localhost:27017', {useNewUrlParser: true});
+        const db = client.db('TeamMaker');
+        const playersAdded = await db.collection('ListOfPlayers').find({}).toArray();
+        console.log(playersAdded);
+        res.status(200).json(playersAdded);
+        client.close();
+    }
+    catch( error) {
+        res.status(500).json( { message: "Error connecting to db", error});
+    }
+})
+
 
 app.get('/api/teams', async (req, res) => {
     try {
